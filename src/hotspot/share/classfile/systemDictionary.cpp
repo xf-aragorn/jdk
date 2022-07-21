@@ -110,14 +110,6 @@ class InvokeMethodKey : public StackObj {
         return (unsigned int) (hash ^ iid);
     }
 
-    Symbol* get_symbol(){
-        return _symbol;
-    }
-
-    intptr_t get_iid(){
-        return _iid;
-    }
-
 };
 
 ResourceHashtable<InvokeMethodKey, Method*, 139, ResourceObj::C_HEAP, mtClass,
@@ -1666,28 +1658,15 @@ bool SystemDictionary::do_unloading(GCTimer* gc_timer) {
   return unloading_occurred;
 }
 
-class InvokeMethodIntrinsicIterate : StackObj{
-private:
-  void (*_f)(Method*);
-
-public:
-
-  InvokeMethodIntrinsicIterate(void f(Method*)):
-    _f(f) {};
-
-  bool do_entry(InvokeMethodKey key, Method* value){
-    _f(value);
-    return true;
-  }
-};
-
 void SystemDictionary::methods_do(void f(Method*)) {
   // Walk methods in loaded classes
   MutexLocker ml(ClassLoaderDataGraph_lock);
   ClassLoaderDataGraph::methods_do(f);
 
-  InvokeMethodIntrinsicIterate invokeMethodIntrinsicIterate(f);
-  _invoke_method_intrinsic_table.iterate(&invokeMethodIntrinsicIterate);
+  auto doit = [&] (InvokeMethodKey key, Method* method) {
+    f(method);
+  };
+  _invoke_method_intrinsic_table.iterate_all(doit);
 }
 
 // ----------------------------------------------------------------------------

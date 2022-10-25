@@ -16,3 +16,12 @@ NashornProfile.txt
 **/JTreport/**
 **/JTwork/**
 /src/utils/LogCompilation/target/
+/out/build/
+/.vs/
+/windows-x86_64-server-fastdebug/
+/windows-x86_64-server-release/
+/linux-x86_64-server-fastdebug/
+/linux-x86_64-normal-server-fastdebug/
+/cmake-build-debug/
+/make.jdk17/
+/make.bak/
